@@ -58,7 +58,7 @@ def add_transactions():
     new_transactions = [Transaction(transaction["asset_id"], transaction["weight"], int(time.time())) for transaction in transactions]
 
     try:
-        add_transactions_use_case(new_transactions, transactions_repository)
+        add_transactions_use_case(new_transactions, transactions_repository, asset_repository)
     except AssertionError as error:
         return f"Something went wrong\n{error}", 500
 
