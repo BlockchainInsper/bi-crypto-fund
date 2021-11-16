@@ -1,9 +1,10 @@
-from lib.repository.repository import TransactionRepository, AssetRepository
+from lib.repository.repository import TransactionRepository
 from lib.services.yahoo import get_dataframe
 from datetime import datetime
 import numpy as np
+import pandas as pd
 
-def get_history_use_case(transaction_repository: TransactionRepository):
+def get_history_use_case(transaction_repository: TransactionRepository) -> pd.Series:
     history = transaction_repository.get_history()
     ticker_list = list(set([transaction["ticker"] for transaction in history]))
     ticker_weight_list = []
@@ -42,6 +43,6 @@ def get_history_use_case(transaction_repository: TransactionRepository):
         df[ticker_impact] = (df[ticker_change])*df[ticker_weight]
         df["Linear Daily Return"] += df[ticker_impact]
 
-    df["Cumulative Daily Return"] = df["Linear Daily Return"].cumprod()
+    df["Cumulative Daily Return"] = df["Linear Daily Return"].cumprod() - 1
 
-    return df["Cumulative Daily Return"].to_json()
+    return df["Cumulative Daily Return"]

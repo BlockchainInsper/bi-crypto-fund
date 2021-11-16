@@ -21,3 +21,13 @@ def check_if_ticker_exists(ticker: str):
     if response.info['regularMarketPrice'] == None: return False
     
     return True
+
+def get_metrics(interval: str = "1d") -> pd.DataFrame:
+    data = yf.download(
+        tickers = "BTC-USD ^GSPC",
+        start = "2020-12-31",
+        interval = interval,
+        threads = True,
+    )
+
+    return data["Adj Close"]

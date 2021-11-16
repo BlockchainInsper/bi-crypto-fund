@@ -5,6 +5,7 @@ import time
 import threading
 import pymongo
 from flask import Flask, jsonify
+from flask_cors import CORS, cross_origin
 
 from lib.domain.asset import Asset
 from lib.domain.transaction import Transaction
@@ -13,18 +14,27 @@ from lib.repository.mongo import MongoAssetRepository, MongoTransactionRepositor
 from lib.use_cases.get_history import get_history_use_case
 from lib.use_cases.get_assets import get_assets_use_case
 from lib.use_cases.add_asset import add_asset_use_case
+from lib.use_cases.get_fund_info import get_fund_info_use_case
 from lib.use_cases.add_transactions import add_transactions_use_case
 
 app = Flask(__name__)
+CORS(app)
 
 client = pymongo.MongoClient("").FundoBI
 asset_repository = MongoAssetRepository(client)
 transactions_repository = MongoTransactionRepository(client)
 
 @app.route('/', methods=['GET'])
+def display_fund_info():
+    fund_info = get_fund_info_use_case(transactions_repository, asset_repository)
+    response = {"fund_info": fund_info}
+    
+    return jsonify(response), 200
+
+@app.route('/raw', methods=['GET'])
 def display_history():
     history = get_history_use_case(transactions_repository)
-    response = {"history": history, "length": len(history)}
+    response = {"history": history.to_json(), "length": len(history)}
     
     return jsonify(response), 200
 
