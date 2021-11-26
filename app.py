@@ -20,10 +20,11 @@ from lib.use_cases.add_transactions import add_transactions_use_case
 app = Flask(__name__)
 CORS(app)
 
-client = pymongo.MongoClient("").FundoBI
+client = pymongo.MongoClient(os.environ.get("MONGO_URL")).FundoBI
 asset_repository = MongoAssetRepository(client)
 transactions_repository = MongoTransactionRepository(client)
 
+# Retrieve information used in website
 @app.route('/', methods=['GET'])
 def display_fund_info():
     fund_info = get_fund_info_use_case(transactions_repository, asset_repository)
@@ -31,6 +32,7 @@ def display_fund_info():
     
     return jsonify(response), 200
 
+# Retrieve raw information from fund 
 @app.route('/raw', methods=['GET'])
 def display_history():
     history = get_history_use_case(transactions_repository)
@@ -38,6 +40,7 @@ def display_history():
     
     return jsonify(response), 200
 
+# Retrieve list of registered assets 
 @app.route('/assets/list', methods=['GET'])
 def display_assets():
     assets = get_assets_use_case(asset_repository)
@@ -45,6 +48,7 @@ def display_assets():
     
     return jsonify(response), 200
 
+# Add a new asset
 @app.route('/assets', methods=['POST'])
 def add_asset():
     asset = flask.request.get_json()
@@ -61,6 +65,7 @@ def add_asset():
 
     return "Asset added", 200
 
+# Add a new transaction
 @app.route('/transactions', methods=['POST'])
 def add_transactions():
     transactions = flask.request.get_json()["transactions"]
@@ -76,6 +81,6 @@ def add_transactions():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    # app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port)
     # Local
-    app.run(host='127.0.0.1', port=port, debug=True)
+    # app.run(host='127.0.0.1', port=port, debug=True)
