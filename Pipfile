@@ -14,6 +14,7 @@ dnspython = "*"
 pandas = "*"
 numpy = "*"
 yfinance = "*"
+pyjwt = "*"
 
 [requires]
 

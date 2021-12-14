@@ -1,11 +1,9 @@
 import dataclasses
 
-
 @dataclasses.dataclass
-class Asset:
-    name: str
-    ticker: str
-    added_by: str
+class User:
+    username: str
+    password_hash: str
 
     @classmethod
     def from_dict(self, d):
