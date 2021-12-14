@@ -7,7 +7,8 @@ from bson.json_util import dumps
 
 from lib.domain.transaction import Transaction
 from lib.domain.asset import Asset
-from lib.repository.repository import TransactionRepository, AssetRepository
+from lib.domain.user import User
+from lib.repository.repository import TransactionRepository, AssetRepository, UserRepository
 
 
 class MongoTransactionRepository(TransactionRepository):
@@ -29,6 +30,7 @@ class MongoTransactionRepository(TransactionRepository):
     def create_transaction(self, transaction: Transaction) -> None:
         transaction_serialized = transaction.to_dict()
         transaction_serialized["asset_id"] = ObjectId(transaction_serialized["asset_id"])
+        transaction_serialized["added_by"] = ObjectId(transaction_serialized["added_by"])
 
         self.client.insert_one(transaction_serialized)
 
@@ -41,4 +43,16 @@ class MongoAssetRepository(AssetRepository):
         return json.loads(dumps(assets))
     
     def create_asset(self, asset: Asset) -> None:
-        self.client.insert_one(asset.to_dict())
+        asset_serialized = asset.to_dict()
+        asset_serialized["added_by"] = ObjectId(asset_serialized["added_by"])
+
+        self.client.insert_one(asset_serialized)
+    
+class MongoUserRepository(UserRepository):
+    def __init__(self, client):
+        self.client = client.users
+    
+    def get_user_by_username(self, username: str) -> User:
+        query = { "username": username }
+
+        return json.loads(dumps(self.client.find_one(query)))

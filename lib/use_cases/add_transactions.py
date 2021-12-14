@@ -18,5 +18,5 @@ def add_transactions_use_case(transactions: List[Transaction], transaction_repos
     
     for asset in all_assets:
         if asset["_id"]["$oid"] not in daily_assets:
-            transaction = Transaction(asset["_id"]["$oid"], 0, int(time.time()))
+            transaction = Transaction(asset["_id"]["$oid"], 0, int(time.time()), transactions[0].added_by)
             transaction_repository.create_transaction(transaction)

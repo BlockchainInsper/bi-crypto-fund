@@ -5,6 +5,7 @@ class Transaction:
     asset_id: str
     weight: float
     timestamp: int
+    added_by: str
 
     @classmethod
     def from_dict(self, d):
